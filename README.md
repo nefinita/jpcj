@@ -66,6 +66,7 @@ python3 tools/export_golden.py \
 - [x] P1 单技能公式 + 导数（golden 回归）
 - [x] P2 连招期望通道（162 向量 / 1620 步）
 - [x] P3 蒙特卡洛击杀率（统计等价，50k 采样）
+- [ ] P7 时间轴（GCD/调息/吟唱）记时连招 —— 设计见 [`docs/TIMING.md`](docs/TIMING.md)，**待数据取证后实现**
 
 ## 免责声明
 
