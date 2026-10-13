@@ -19,6 +19,13 @@ end
 """`trunc(v) = Float32(UInt32(v))`（SPEC §0 的截断点专用）。"""
 @inline trunc32(v::Float32)::Float32 = Float32(to_u32(v))
 
+"""复刻 Rust `v as u32`（Float64 入参）：饱和截断。"""
+@inline function to_u32(v::Float64)::UInt32
+    v <= 0.0 && return UInt32(0)
+    v >= 4294967296.0 && return typemax(UInt32)
+    return UInt32(trunc(v))
+end
+
 """技能基础伤害 = (base_damage1 + base_damage2) ÷ 2（u32 整除）。"""
 @inline base_atk(b1::UInt32, b2::UInt32)::UInt32 = (b1 + b2) ÷ UInt32(2)
 

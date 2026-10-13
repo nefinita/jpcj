@@ -153,4 +153,62 @@ else
         @test n_skill_bad == 0
         @test n_deriv_bad == 0
     end
+
+    # ---- P2/P3 连招回归 ----
+    combo_path = joinpath(@__DIR__, "vectors", "combo_golden.json")
+    if isfile(combo_path)
+        cdoc = JSON3.read(read(combo_path, String))
+        cvecs = cdoc.vectors
+        @testset "combo 回归（$(length(cvecs)) 向量）" begin
+            n_exp_total = 0
+            n_exp_bad = 0
+            mc_fail = 0
+            cfails = String[]
+            for v in cvecs
+                p = parse_player(v.player)
+                h = parse_hostile(v.hostile)
+                b = parse_buff(v.buff)
+                c = parse_coeff(v.coefficient)
+                x = parse_xinfa(v.xinfa)
+                _, skills_all = load_skill_table(data_dir, String(v.profession))
+                idxs = [Int(s.index) + 1 for s in v.steps]
+                skills = skills_all[idxs]
+                r = calculate_combo(skills, p, h, x, b, c; samples=50_000, seed=20261014)
+                exp = v.expected
+                for i in eachindex(skills)
+                    e = exp.steps[i]
+                    n_exp_total += 1
+                    ok = r.steps[i].g_damage == UInt32(e.g_damage) &&
+                         r.steps[i].h_damage == UInt32(e.h_damage) &&
+                         r.steps[i].q_damage == UInt32(e.q_damage) &&
+                         r.steps[i].dot_jumps == UInt32.(collect(e.dot_jumps)) &&
+                         abs(r.steps[i].crit_rate - Float32(e.crit_rate)) < 1f-6 &&
+                         abs(r.steps[i].cumulative_mean - Float64(e.cumulative_mean_wan) * 10000.0) < 1e-3 &&
+                         abs(r.steps[i].lost_hp_zhenshi_damage - Float64(e.lost_hp_zhenshi_damage)) < 1e-6
+                    if !ok
+                        n_exp_bad += 1
+                        if length(cfails) < 20
+                            push!(cfails, "[$(v.profession)/$(v.scenario)] step $i: " *
+                                "got(g=$(r.steps[i].g_damage),h=$(r.steps[i].h_damage),q=$(r.steps[i].q_damage)," *
+                                "mean=$(r.steps[i].cumulative_mean),lost=$(r.steps[i].lost_hp_zhenshi_damage)) " *
+                                "exp(g=$(e.g_damage),h=$(e.h_damage),q=$(e.q_damage)," *
+                                "mean_wan=$(e.cumulative_mean_wan),lost=$(e.lost_hp_zhenshi_damage))")
+                        end
+                    end
+                end
+                if abs(r.final_kill_prob - Float64(exp.final_kill_prob)) > 0.02
+                    mc_fail += 1
+                    if length(cfails) < 40
+                        push!(cfails, "[$(v.profession)/$(v.scenario)] kill_prob got $(r.final_kill_prob) exp $(exp.final_kill_prob)")
+                    end
+                end
+            end
+            @info "combo 期望: total=$n_exp_total bad=$n_exp_bad; MC 超差=$mc_fail"
+            for f in cfails
+                @error f
+            end
+            @test n_exp_bad == 0
+            @test mc_fail == 0
+        end
+    end
 end
