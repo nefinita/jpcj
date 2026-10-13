@@ -1,7 +1,7 @@
 # JX3 计算引擎规格（SPEC v0.1）
 
 本规格描述 `libjpcg_core`（单技能）与 `libjpcg_combo`（连招/击杀率）的**可观测计算行为**，
-作为 `jx3-calc.jl` 独立实现的唯一依据。凡与 `test/vectors/golden.json` 冲突之处，**以向量为准**。
+作为 `jpcj` 独立实现的唯一依据。凡与 `test/vectors/golden.json` 冲突之处，**以向量为准**。
 
 ---
 
@@ -154,8 +154,16 @@ H = G + UInt32( Float32(G)
 Q = UInt32( Float32(G) * (1.0 - crit) + Float32(H) * crit )
 ```
 
-**单技能输出映射**：`y=Y, b=B, i=I, n(G)=G, h(H)=H, q=Q`。
-（注意 DTO 中 `n` 是普通命中段 = 内部 `G`。）
+**单技能输出映射（注意 `b`/`i` 与字母含义相反）**：
+```
+y = Y
+b = I      # 技能基础伤害段（内部 I）
+i = B      # 攻击段（内部 B）
+n = G      # 普通命中段
+h = H
+q = Q
+```
+（DTO 中 `n` = 普通命中，`b`/`i` 的名字与其字母含义相反——以本映射为准。）
 
 > `zhenshishanghai`（固定真实伤害）与 `lost_hp_zhenshishanghai`（追加真伤系数）
 > **不并入 Q**，作为独立字段透传（见 §6）。

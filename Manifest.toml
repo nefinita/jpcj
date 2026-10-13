@@ -2,9 +2,29 @@
 
 julia_version = "1.13.1"
 manifest_format = "2.1"
-project_hash = "8bc6c89f41303264e751c762b32d100800cccd58"
+project_hash = "27d164dfdb5f2d9e6a08592b7036dc4ca7aff9f2"
+
+[[deps.Dates]]
+deps = ["Printf"]
+uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+version = "1.11.0"
 
 [[deps.JX3Calc]]
+deps = ["TOML"]
 path = "."
 uuid = "a3023d23-f142-4f9f-8a0d-fe7afc340504"
 version = "0.1.0"
+
+[[deps.Printf]]
+deps = ["Unicode"]
+uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+version = "1.11.0"
+
+[[deps.TOML]]
+deps = ["Dates"]
+uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.3"
+
+[[deps.Unicode]]
+uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+version = "1.11.0"

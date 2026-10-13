@@ -1,15 +1,17 @@
-name = "JX3Calc"
+name = "jpcj"
 uuid = "a3023d23-f142-4f9f-8a0d-fe7afc340504"
 authors = ["nefinita"]
 version = "0.1.0"
 
 [deps]
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
 julia = "1.10"
 
 [extras]
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Test", "JSON3"]
