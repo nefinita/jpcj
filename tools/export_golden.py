@@ -35,11 +35,14 @@ LIB_NAMES = {
     "win32": "jpcg_core.dll",
 }
 
-# 系数（来自 examples/python_demo/quick_calc_test.py 的预设，等级 130）
+# 系数：显式传全 8 个字段（= 正式服 130 级等级常数），保证向量自包含、
+# 不依赖任何值集回退（否则 yujin_xishu/yuhui_xishu 会落到默认值集）。
 COEFFICIENT = {
     "pofang_xishu": 225957.6,
     "huixin_xishu": 197703.0,
     "huixiao_xishu": 72844.2,
+    "yujin_xishu": 197703.0,
+    "yuhui_xishu": 55123.2,
     "huajin_xishu": 30115.8,
     "fangyu_xishu": 126007.2,
     "pvp_global_jianshang": 0.9,
