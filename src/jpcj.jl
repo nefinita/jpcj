@@ -14,15 +14,16 @@ module jpcj
 include("numeric.jl")
 include("types.jl")
 include("panel.jl")
+include("forward.jl")
 include("skill.jl")
 include("derivatives.jl")
 include("combo.jl")
 include("data.jl")
 
 export Player, Hostile, Xinfa, Buff, Coeff, Skill, DamageResult, DerivativeSet
-export ComboResult, ComboStepResult
-export calc_skill, calc_derivatives, calculate_combo, hp_preset, lost_hp_append
-export to_u32, trunc32, base_atk, dot_jump_count, is_neigong, powi
+export ComboResult, ComboStepResult, ForwardInfo
+export calc_skill, calc_derivatives, calculate_combo, hp_preset, lost_hp_append, dot_factor
+export to_u32, trunc32, trunc_st, base_atk, dot_jump_count, is_neigong, powi
 export load_skill_table, load_value_sets, load_coeff
 
 end # module jpcj

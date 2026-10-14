@@ -78,25 +78,25 @@ function calculate_combo(skills::Vector{Skill}, p::Player, h::Hostile, x::Xinfa,
     ec_max = hp === nothing ? nothing : hp[2]
 
     for (i, s) in enumerate(skills)
-        d = calc_skill(p, h, x, b, c, s)
-        q = Float64(d.q)
+        fi = _forward(p, h, x, b, c, s)
+        q = Float64(fi.q)
         lost = 0.0
         if hp !== nothing
             after = max(ec_cur - q, 0.0)
             lost = lost_hp_append(Float64(s.lost_hp_zhenshishanghai), UInt32(ec_max), to_u32(after))
             ec_cur = max(after - lost, 0.0)
         end
-        crit = guo_huixin(p, h, b, c) + Float32(s.huixin_up) / 100f0
+        crit = fi.crit
 
-        g = Float64(d.n)
-        hh = Float64(d.h)
+        g = Float64(fi.g)
+        hh = Float64(fi.h)
         pr = Float64(crit)
 
         # 方差
         variance = if s.has_critical_strike
             0.0
         elseif s.dot_flag > 0
-            j = d.dot_jumps
+            j = fi.jumps
             if isempty(j)
                 (hh - g)^2 * pr * (1.0 - pr)
             else
@@ -117,9 +117,9 @@ function calculate_combo(skills::Vector{Skill}, p::Player, h::Hostile, x::Xinfa,
         # dot 逐跳 g/h
         djg = UInt32[]
         djh = UInt32[]
-        if s.dot_flag > 0 && !isempty(d.dot_jumps)
-            base = Float64(d.dot_jumps[1])
-            for jk in d.dot_jumps
+        if s.dot_flag > 0 && !isempty(fi.jumps)
+            base = Float64(fi.jumps[1])
+            for jk in fi.jumps
                 r = base > 0.0 ? Float64(jk) / base : 1.0
                 push!(djg, to_u32(g * r))
                 push!(djh, to_u32(hh * r))
@@ -129,10 +129,10 @@ function calculate_combo(skills::Vector{Skill}, p::Player, h::Hostile, x::Xinfa,
         cum_mean += q + lost
         cum_var += variance
 
-        models[i] = _StepModel(d.n, d.h, d.q, crit, s.has_critical_strike,
+        models[i] = _StepModel(fi.g, fi.h, fi.q, crit, s.has_critical_strike,
                                Float64(s.lost_hp_zhenshishanghai), djg, djh)
-        steps[i] = ComboStepResult(s.skill_name, d.n, d.h, d.q, crit,
-                                   cum_mean, sqrt(cum_var), 0.0, d.dot_jumps,
+        steps[i] = ComboStepResult(s.skill_name, fi.g, fi.h, fi.q, crit,
+                                   cum_mean, sqrt(cum_var), 0.0, fi.jumps,
                                    s.has_critical_strike, s.zhenshishanghai, lost)
     end
 

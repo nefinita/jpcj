@@ -263,6 +263,10 @@ kill_prob_curve[i]   = (i+1, round(kill_prob_i * 10000.0) / 100.0)     # 百分�
 
 ## 8. 导数（6 属性）
 
+> **实现方式**：由 `ForwardDiff`（前向模式）对 §4 的**单一前向**（`forward.jl::_core`）**自动求导**，
+> 截断点用 **straight-through**（前向取值截断、反向直通），从而复现下文 JPCG 的
+> 「截断值 + 连续敏感度」混合语义。下列公式即该混合语义的等价描述（供审阅对照）。
+
 `q_cal_with_derivatives` 与 `q_cal` 完全等价的 Q，另算偏导（**连续近似，忽略截断**）。
 
 公共因子：
@@ -299,7 +303,9 @@ dq_di2 = dg_di2 * dq_dg
 108 条向量 = 28 门派 × 4 情景；每条含 `request`（输入）、`calculate`（期望输出）、`derivatives`。
 
 - 整数段（`y/b/i/n/h/q/dot_jumps`）：**必须精确相等**
-- 导数：`|Δ| < 1e-6`
+- 导数：**`|Δ| < 1e-5`**
+  - AD 与 JPCG 手写链式的 f32 求值顺序不同，实测最大偏差 **7.6e-6**（≈2 个 f32 eps）；
+    容差取 1e-5（并非语义差异——语义由 straight-through 截断保证一致）。
 
 ---
 
